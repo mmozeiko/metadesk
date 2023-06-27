@@ -4103,14 +4103,14 @@ MD_S8ListPush(arena, out, indent_string);\
         }
         
         // rjf: figure out opener/closer symbols
-        MD_u8 opener_char = 0;
-        MD_u8 closer_char = 0;
-        if(node->flags & MD_NodeFlag_HasParenLeft)        { opener_char = '('; }
-        else if(node->flags & MD_NodeFlag_HasBracketLeft) { opener_char = '['; }
-        else if(node->flags & MD_NodeFlag_HasBraceLeft)   { opener_char = '{'; }
-        if(node->flags & MD_NodeFlag_HasParenRight)       { closer_char = ')'; }
-        else if(node->flags & MD_NodeFlag_HasBracketRight){ closer_char = ']'; }
-        else if(node->flags & MD_NodeFlag_HasBraceRight)  { closer_char = '}'; }
+        MD_String8 opener_char = MD_S8Lit("");
+        MD_String8 closer_char = MD_S8Lit("");
+        if(node->flags & MD_NodeFlag_HasParenLeft)        { opener_char = MD_S8Lit("("); }
+        else if(node->flags & MD_NodeFlag_HasBracketLeft) { opener_char = MD_S8Lit("["); }
+        else if(node->flags & MD_NodeFlag_HasBraceLeft)   { opener_char = MD_S8Lit("{"); }
+        if(node->flags & MD_NodeFlag_HasParenRight)       { closer_char = MD_S8Lit(")"); }
+        else if(node->flags & MD_NodeFlag_HasBracketRight){ closer_char = MD_S8Lit("]"); }
+        else if(node->flags & MD_NodeFlag_HasBraceRight)  { closer_char = MD_S8Lit("}"); }
         
         MD_b32 multiline = 0;
         for(MD_EachNode(child, node->first_child))
@@ -4123,7 +4123,7 @@ MD_S8ListPush(arena, out, indent_string);\
             }
         }
         
-        if(opener_char != 0)
+        if(opener_char.size != 0)
         {
             if(multiline)
             {
@@ -4134,7 +4134,7 @@ MD_S8ListPush(arena, out, indent_string);\
             {
                 MD_S8ListPush(arena, out, MD_S8Lit(" "));
             }
-            MD_S8ListPush(arena, out, MD_S8(&opener_char, 1));
+            MD_S8ListPush(arena, out, opener_char);
             if(multiline)
             {
                 MD_S8ListPush(arena, out, MD_S8Lit("\n"));
@@ -4156,7 +4156,7 @@ MD_S8ListPush(arena, out, indent_string);\
             MD_ReconstructionFromNode(arena, out, child, child_indent, indent_string);
         }
         MD_PrintIndent(indent);
-        if(closer_char != 0)
+        if(closer_char.size != 0)
         {
             if(last_line != code_loc.line)
             {
@@ -4167,7 +4167,7 @@ MD_S8ListPush(arena, out, indent_string);\
             {
                 MD_S8ListPush(arena, out, MD_S8Lit(" "));
             }
-            MD_S8ListPush(arena, out, MD_S8(&closer_char, 1));
+            MD_S8ListPush(arena, out, closer_char);
         }
     }
     
